@@ -17,6 +17,11 @@ const { roomId, member } = defineProps({
     type: Number,
     default: null,
   },
+
+  messages: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 const sendMessage = () => {
@@ -39,6 +44,23 @@ const sendMessage = () => {
     <header class="absolute top-0 h-[50px] w-full border-b flex items-center px-4">
       <h2>{{ member && member.user ? member.user.name : '' }}</h2>
     </header>
+    <section class="pt-[50px] pb-[100px] h-full overflow-y-auto">
+      <div class="h-full p-4">
+        <ul class="space-y-4">
+          <li v-for="message in messages" :key="message.id" class="flex items-start gap-4 p-4" :class="{
+            'justify-end': message.sender_id === $page.props.auth.user.id,
+            'justify-start': message.sender_id !== $page.props.auth.user.id
+          }">
+            <div class="flex flex-col p-2 rounded-lg" :class="{
+              'bg-[rgb(222,233,255)]': message.sender_id === $page.props.auth.user.id,
+              'bg-gray-100': message.sender_id !== $page.props.auth.user.id
+            }">
+              <span class="text-sm text-gray-600">{{ message.message }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
     <footer class="absolute bottom-0 w-full h-[100px] border-t flex items-center px-4">
       <div class="relative flex items-center w-full py-4">
         <form class="relative flex items-center w-full" @submit.prevent="sendMessage">

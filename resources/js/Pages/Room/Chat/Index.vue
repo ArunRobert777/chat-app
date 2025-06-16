@@ -5,18 +5,26 @@ import OnlinePanel from './Partials/OnlinePanel.vue';
 import ChatPanel from './Partials/ChatPanel.vue';
 
 defineProps({
+  
   users: {
     type: Array,
     default: () => [],
   },
+  
   selectedChat: {
     type: Object,
     default: () => null,
   },
+  
   room: {
     type: Object,
     default: () => null
-  }
+  },
+
+  messages: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 </script>
@@ -39,7 +47,7 @@ defineProps({
             <section class="h-full">
               <div class="flex flex-col md:flex-row gap-4 h-full">
                 <OnlinePanel :members="users" />
-                <ChatPanel :member="selectedChat" :roomId="room.id" />
+                <ChatPanel :member="selectedChat" :roomId="room.id" :messages="messages" />
               </div>
             </section>
           </div>

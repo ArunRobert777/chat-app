@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Message;
 use App\Models\Room;
 use App\Models\RoomMember;
 use Illuminate\Http\RedirectResponse;
@@ -60,16 +61,37 @@ class RoomController extends Controller
       ->where('user_id', '!=', Auth::user()->id)
       ->get();
 
-    $selectedChat = $members[0] ?? null;
+    $selectedUser = $members[0] ?? null;
+
+    $messages = $this->getRoomMessages(
+      Auth::user()->id,
+      $selectedUser->user->id,
+      $room->id
+    );
 
     return Inertia::render('Room/Chat/Index', [
       'users' => $members,
-      'selectedChat' => $selectedChat,
+      'selectedChat' => $selectedUser,
+      'messages' => $messages,
       'room' => [
         'name' => $room->name,
         'id' => $room->id,
       ],
     ]);
+  }
+
+  private function getRoomMessages($userA, $userB, $roomId)
+  {
+    return Message::where(function ($query) use ($userA, $userB, $roomId) {
+      $query->where('sender_id', $userA)
+        ->where('receiver_id', $userB)
+        ->where('room_id', $roomId);
+    })->orWhere(function ($query) use ($userA, $userB, $roomId) {
+      $query->where('sender_id', $userB)
+        ->where('receiver_id', $userA)
+        ->where('room_id', $roomId);
+    })->get();
+
   }
 
   public function destroy(Room $room): RedirectResponse

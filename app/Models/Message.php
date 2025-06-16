@@ -13,4 +13,19 @@ class Message extends Model
         'receiver_id',
         'message',
     ];
+
+    public function room(): BelongsTo
+    {
+        return $this->belongsTo(Room::class);
+    }
+    
+    public function sender(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'sender_id');
+    }
+
+    public function receiver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'receiver_id');
+    }
 }
