@@ -46,7 +46,7 @@ const sendMessage = () => {
     </header>
     <section class="pt-[50px] pb-[100px] h-full overflow-y-auto">
       <div class="h-full p-4">
-        <ul class="space-y-4">
+        <ul class="h-full space-y-4 overflow-x-scroll">
           <li v-for="message in messages" :key="message.id" class="flex items-start gap-4 p-4" :class="{
             'justify-end': message.sender_id === $page.props.auth.user.id,
             'justify-start': message.sender_id !== $page.props.auth.user.id

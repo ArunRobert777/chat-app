@@ -82,6 +82,12 @@ class RoomController extends Controller
 
   private function getRoomMessages($userA, $userB, $roomId)
   {
+    return Message::where('room_id', $roomId)->get();
+
+  }
+
+  private function getPrivateRoomMessages($userA, $userB, $roomId)
+  {
     return Message::where(function ($query) use ($userA, $userB, $roomId) {
       $query->where('sender_id', $userA)
         ->where('receiver_id', $userB)
