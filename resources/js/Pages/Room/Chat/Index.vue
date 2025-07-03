@@ -1,21 +1,21 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import OnlinePanel from './Partials/OnlinePanel.vue';
 import ChatPanel from './Partials/ChatPanel.vue';
 
-defineProps({
-  
+const props = defineProps({
+
   users: {
     type: Array,
     default: () => [],
   },
-  
+
   selectedChat: {
     type: Object,
     default: () => null,
   },
-  
+
   room: {
     type: Object,
     default: () => null
@@ -26,6 +26,18 @@ defineProps({
     default: () => [],
   },
 })
+
+const selectMember = (memberId) => {
+
+  router.visit('/chat/private', {
+    method: 'post',
+    data: {
+      receiver_id: memberId,
+      room_id: props.room.id,
+    },
+    only: ['messages'],
+  });
+}
 
 </script>
 
@@ -46,7 +58,7 @@ defineProps({
           <div class="p-6 text-gray-900 h-[700px]">
             <section class="h-full">
               <div class="flex flex-col md:flex-row gap-4 h-full">
-                <OnlinePanel :members="users" />
+                <OnlinePanel :members="users" :roomId="room.id" @select-member="selectMember" />
                 <ChatPanel :member="selectedChat" :roomId="room.id" :messages="messages" />
               </div>
             </section>

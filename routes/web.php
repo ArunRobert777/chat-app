@@ -31,6 +31,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat/{room}', [RoomController::class, 'join'])->name('room.join');
 
     Route::post('/chat/send', [MessageController::class, 'store'])->name('message.send');
+
+    Route::post('/chat/private', [RoomController::class, 'getPrivateRoomMessages'])->name('message.private');
 });
 
 require __DIR__ . '/auth.php';

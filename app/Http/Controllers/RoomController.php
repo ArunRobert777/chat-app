@@ -86,9 +86,13 @@ class RoomController extends Controller
 
   }
 
-  private function getPrivateRoomMessages($userA, $userB, $roomId)
+  public function getPrivateRoomMessages(Request $request)
   {
-    return Message::where(function ($query) use ($userA, $userB, $roomId) {
+    $userA = Auth::id();
+    $userB = $request->post('receiver_id');
+    $roomId = $request->post('room_id');
+
+    $messages = Message::where(function ($query) use ($userA, $userB, $roomId) {
       $query->where('sender_id', $userA)
         ->where('receiver_id', $userB)
         ->where('room_id', $roomId);
@@ -97,6 +101,10 @@ class RoomController extends Controller
         ->where('receiver_id', $userA)
         ->where('room_id', $roomId);
     })->get();
+
+    return Inertia::render('Room/Chat/Index', [
+      'messages' => $messages,
+    ]);
 
   }
 
