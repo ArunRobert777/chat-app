@@ -1,8 +1,9 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import OnlinePanel from './Partials/OnlinePanel.vue';
 import ChatPanel from './Partials/ChatPanel.vue';
+import { ref } from 'vue';
 
 const props = defineProps({
 
@@ -27,16 +28,22 @@ const props = defineProps({
   },
 })
 
+const messages = ref(props.messages);
+const selectedChat = ref(props.selectedChat);
+
 const selectMember = (memberId) => {
 
-  router.visit('/chat/private', {
-    method: 'post',
-    data: {
-      receiver_id: memberId,
-      room_id: props.room.id,
-    },
-    only: ['messages'],
-  });
+  axios.post(route('message.private'), {
+    receiver_id: memberId,
+    room_id: props.room.id,
+  })
+    .then(res => {
+      messages.value = res.data.messages;
+      selectedChat.value = res.data.selectedChat;
+    })
+    .catch(err => {
+      console.log(err);
+    })
 }
 
 </script>
