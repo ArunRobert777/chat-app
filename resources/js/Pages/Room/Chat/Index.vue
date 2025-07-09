@@ -26,10 +26,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-})
+});
 
 const messages = ref(props.messages);
-const selectedChat = ref(props.selectedChat);
+const selectedMember = ref(props.selectedChat) ?? null;
 
 const selectMember = (memberId) => {
 
@@ -39,7 +39,7 @@ const selectMember = (memberId) => {
   })
     .then(res => {
       messages.value = res.data.messages;
-      selectedChat.value = res.data.selectedChat;
+      selectedMember.value = res.data.selectedChat;
     })
     .catch(err => {
       console.log(err);
@@ -66,7 +66,7 @@ const selectMember = (memberId) => {
             <section class="h-full">
               <div class="flex flex-col md:flex-row gap-4 h-full">
                 <OnlinePanel :members="users" :roomId="room.id" @select-member="selectMember" />
-                <ChatPanel :member="selectedChat" :roomId="room.id" :messages="messages" />
+                <ChatPanel :member="selectedMember" :room="room" :messages="messages" />
               </div>
             </section>
           </div>

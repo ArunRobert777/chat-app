@@ -17,6 +17,9 @@ const selectMember = (memberId) => {
 <template>
   <section class="hidden w-full sm:block sm:w-1/4 border">
     <ul>
+      <li class="p-2 border-b font-semibold text-gray-700">
+        All Chat
+      </li>
       <li @click="selectMember(member.user_id)" v-for="member in members" :key="member.id"
         class="items-center p-2 border-b hover:cursor-pointer hover:bg-gray-100">
         <div>

@@ -1,21 +1,15 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 
-const form = useForm({
-  message: '',
-  room_id: roomId,
-  receiver_id: member.user.id,
-});
-
-const { roomId, member } = defineProps({
+const { room, member } = defineProps({
   member: {
     type: Object,
     default: () => null,
   },
 
-  roomId: {
-    type: Number,
-    default: null,
+  room: {
+    type: Object,
+    default: () => null,
   },
 
   messages: {
@@ -24,9 +18,16 @@ const { roomId, member } = defineProps({
   },
 })
 
+const form = useForm({
+  message: '',
+  room_id: room.id,
+  receiver_id: null,
+});
+
 const sendMessage = () => {
   form.message = form.message.trim();
   if (form.message !== '') {
+    form.receiver_id = member ? member.user_id : null;
     form.post(route('message.send'), {
       onSuccess: () => {
         form.reset();
@@ -42,7 +43,8 @@ const sendMessage = () => {
 <template>
   <section class="relative border h-full w-full">
     <header class="absolute top-0 h-[50px] w-full border-b flex items-center px-4">
-      <h2>{{ member && member.user ? member.user.name : '' }}</h2>
+      <h2 v-if="member">{{ member.user.name }}</h2>
+      <h2 v-else>{{ room.name }}</h2>
     </header>
     <section class="pt-[50px] pb-[100px] h-full overflow-y-auto">
       <div class="h-full p-4">
@@ -63,7 +65,7 @@ const sendMessage = () => {
     </section>
     <footer class="absolute bottom-0 w-full h-[100px] border-t flex items-center px-4">
       <div class="relative flex items-center w-full py-4">
-        <form class="relative flex items-center w-full" @submit.prevent="sendMessage">
+        <form class="relative flex items-center w-full">
           <textarea v-model="form.message" rows="2" placeholder="Type your message here..."
             class="absolute rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 mt-1 block w-full"></textarea>
           <button type="button" @click="sendMessage" :disabled="form.processing"

@@ -11,7 +11,7 @@ class MessageController extends Controller
     {
         $validatedData = $request->validate([
             'room_id' => 'required|exists:rooms,id',
-            'receiver_id' => 'required|exists:users,id',
+            'receiver_id' => 'nullable|exists:users,id',
             'message' => 'required|string|max:255',
         ]);
 

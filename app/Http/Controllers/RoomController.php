@@ -61,7 +61,7 @@ class RoomController extends Controller
       ->where('user_id', '!=', Auth::user()->id)
       ->get();
 
-    $selectedUser = $members[0] ?? null;
+    // $selectedUser = $members[0] ?? null;
 
     $messages = $this->getRoomMessages(
       $room->id
@@ -69,7 +69,7 @@ class RoomController extends Controller
 
     return Inertia::render('Room/Chat/Index', [
       'users' => $members,
-      'selectedChat' => $selectedUser,
+      // 'selectedChat' => $selectedUser,
       'messages' => $messages,
       'room' => [
         'name' => $room->name,
@@ -80,7 +80,7 @@ class RoomController extends Controller
 
   private function getRoomMessages($roomId)
   {
-    return Message::where('room_id', $roomId)->get();
+    return Message::where('room_id', $roomId)->whereNull('receiver_id')->get();
   }
 
   public function getPrivateRoomMessages(Request $request)
