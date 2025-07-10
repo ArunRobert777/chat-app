@@ -1,7 +1,7 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 
-const { room, member } = defineProps({
+const props = defineProps({
   member: {
     type: Object,
     default: () => null,
@@ -20,16 +20,16 @@ const { room, member } = defineProps({
 
 const form = useForm({
   message: '',
-  room_id: room.id,
+  room_id: props.room.id,
   receiver_id: null,
 });
 
 const sendMessage = () => {
   form.message = form.message.trim();
   if (form.message !== '') {
-    form.receiver_id = member ? member.user_id : null;
+    form.receiver_id = props.member ? props.member.user_id : null;
     form.post(route('message.send'), {
-      onSuccess: () => {
+      onSuccess: (res) => {
         form.reset();
       },
       onError: (errors) => {
@@ -43,8 +43,8 @@ const sendMessage = () => {
 <template>
   <section class="relative border h-full w-full">
     <header class="absolute top-0 h-[50px] w-full border-b flex items-center px-4">
-      <h2 v-if="member">{{ member.user.name }}</h2>
-      <h2 v-else>{{ room.name }}</h2>
+      <h2 v-if="props.member">{{ props.member.user.name }}</h2>
+      <h2 v-else>{{ props.room.name }}</h2>
     </header>
     <section class="pt-[50px] pb-[100px] h-full overflow-y-auto">
       <div class="h-full p-4">
