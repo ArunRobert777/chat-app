@@ -58,6 +58,7 @@ const sendMessage = () => {
               'bg-gray-100': message.sender_id !== $page.props.auth.user.id
             }">
               <span class="text-sm text-gray-600">{{ message.message }}</span>
+              <span class="text-xs text-gray-400">{{ message.created_at }}</span>
             </div>
           </li>
         </ul>

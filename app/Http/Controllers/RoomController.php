@@ -97,7 +97,7 @@ class RoomController extends Controller
       $query->where('sender_id', $userB)
         ->where('receiver_id', $userA)
         ->where('room_id', $roomId);
-    })->get();
+    })->oldest()->get();
 
     $data['messages'] = $messages;
     $data['selectedChat'] = RoomMember::where('user_id', $userB)
