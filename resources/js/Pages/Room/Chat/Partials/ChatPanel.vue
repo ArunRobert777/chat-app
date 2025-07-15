@@ -1,5 +1,7 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import axios from 'axios';
+import { nextTick, ref } from 'vue';
 
 const props = defineProps({
   member: {
@@ -18,6 +20,8 @@ const props = defineProps({
   },
 })
 
+const scrollAnchor = ref(null);
+
 const form = useForm({
   message: '',
   room_id: props.room.id,
@@ -28,16 +32,26 @@ const sendMessage = () => {
   form.message = form.message.trim();
   if (form.message !== '') {
     form.receiver_id = props.member ? props.member.user_id : null;
-    form.post(route('message.send'), {
-      onSuccess: (res) => {
+    axios.post(route('message.send'), form)
+      .then(res => {
+        props.messages.push(res.data.message);
         form.reset();
-      },
-      onError: (errors) => {
-        console.error(errors);
-      },
-    });
+
+        nextTick(() => {
+          scrollToBottom();
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
 }
+
+const scrollToBottom = () => {
+  if (scrollAnchor.value) {
+    scrollAnchor.value.scrollIntoView({ behavior: 'smooth' });
+  }
+};
 </script>
 
 <template>
@@ -61,6 +75,7 @@ const sendMessage = () => {
               <span class="text-xs text-gray-400">{{ message.created_at }}</span>
             </div>
           </li>
+          <div ref="scrollAnchor"></div>
         </ul>
       </div>
     </section>
