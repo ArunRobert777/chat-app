@@ -19,7 +19,9 @@ class MessageController extends Controller
 
         $message = Message::create($validatedData);
 
-        return redirect()->back();
+        return response()->json([
+            'message' => $message
+        ], 201);
 
     }
 }
