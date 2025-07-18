@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Message;
 use App\Models\Room;
 use App\Models\RoomMember;
+use App\Services\MessageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,7 +42,7 @@ class RoomController extends Controller
     return to_route('room.index');
   }
 
-  public function join(Room $room): Response
+  public function join(Room $room, MessageService $messageService): Response
   {
     // Check if the user is already a member of the room
     $exists = RoomMember::where('user_id', Auth::id())
@@ -63,7 +64,7 @@ class RoomController extends Controller
 
     // $selectedUser = $members[0] ?? null;
 
-    $messages = $this->getRoomMessages(
+    $messages = $messageService->getRoomMessages(
       $room->id
     );
 
@@ -76,36 +77,6 @@ class RoomController extends Controller
         'id' => $room->id,
       ],
     ]);
-  }
-
-  private function getRoomMessages($roomId)
-  {
-    return Message::where('room_id', $roomId)->whereNull('receiver_id')->get();
-  }
-
-  public function getPrivateRoomMessages(Request $request)
-  {
-    $userA = Auth::id();
-    $userB = $request->post('receiver_id');
-    $roomId = $request->post('room_id');
-
-    $messages = Message::where(function ($query) use ($userA, $userB, $roomId) {
-      $query->where('sender_id', $userA)
-        ->where('receiver_id', $userB)
-        ->where('room_id', $roomId);
-    })->orWhere(function ($query) use ($userA, $userB, $roomId) {
-      $query->where('sender_id', $userB)
-        ->where('receiver_id', $userA)
-        ->where('room_id', $roomId);
-    })->oldest()->get();
-
-    $data['messages'] = $messages;
-    $data['selectedChat'] = RoomMember::where('user_id', $userB)
-      ->where('room_id', $roomId)
-      ->with('user')
-      ->first();
-
-    return response()->json($data);
   }
 
   public function destroy(Room $room): RedirectResponse

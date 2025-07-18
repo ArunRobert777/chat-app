@@ -32,7 +32,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/chat/send', [MessageController::class, 'store'])->name('message.send');
 
-    Route::post('/chat/private', [RoomController::class, 'getPrivateRoomMessages'])->name('message.private');
+    Route::post('/chat/private', [MessageController::class, 'getPrivateRoomMessages'])->name('message.private');
 });
 
 require __DIR__ . '/auth.php';
