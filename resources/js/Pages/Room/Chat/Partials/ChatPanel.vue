@@ -56,6 +56,14 @@ window.Echo.private(`chat.user.${usePage().props.auth.user.id}`)
     });
   });
 
+window.Echo.private(`chat.room.${props.room.id}`)
+  .listen('MessageSent', (e) => {
+    props.messages.push(e.message);
+    nextTick(() => {
+      scrollToBottom();
+    });
+  });
+
 const scrollToBottom = () => {
   if (scrollAnchor.value) {
     scrollAnchor.value.scrollIntoView({ behavior: 'smooth' });
