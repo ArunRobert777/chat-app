@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
 use App\Models\Message;
 use App\Models\RoomMember;
 use App\Services\MessageService;
@@ -27,6 +28,8 @@ class MessageController extends Controller
         $validatedData['sender_id'] = $request->user()->id;
 
         $message = Message::create($validatedData);
+
+        broadcast(new MessageSent($message))->toOthers();
 
         return response()->json([
             'message' => $message

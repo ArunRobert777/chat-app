@@ -1,6 +1,7 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import Echo from 'laravel-echo';
 import { nextTick, ref } from 'vue';
 
 const props = defineProps({
@@ -46,6 +47,14 @@ const sendMessage = () => {
       })
   }
 }
+
+window.Echo.private(`chat.user.${usePage().props.auth.user.id}`)
+  .listen('MessageSent', (e) => {
+    props.messages.push(e.message);
+    nextTick(() => {
+      scrollToBottom();
+    });
+  });
 
 const scrollToBottom = () => {
   if (scrollAnchor.value) {
