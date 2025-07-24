@@ -33,7 +33,11 @@ const sendMessage = () => {
   form.message = form.message.trim();
   if (form.message !== '') {
     form.receiver_id = props.member ? props.member.user_id : null;
-    axios.post(route('message.send'), form)
+    axios.post(route('message.send'), form, {
+      headers: {
+        'X-Socket-ID': window.Echo.socketId()
+      }
+    })
       .then(res => {
         props.messages.push(res.data.message);
         form.reset();
@@ -48,20 +52,29 @@ const sendMessage = () => {
   }
 }
 
+const updateBox = (message) => {
+  if (!props.member) {
+    if (!message.receiver_id) {
+      props.messages.push(message);
+    }
+  } else {
+    if (props.member.user_id === message.sender_id && !message.receiver_id) {
+      props.messages.push(message);
+    }
+  }
+  nextTick(() => {
+    scrollToBottom();
+  });
+};
+
 window.Echo.private(`chat.user.${usePage().props.auth.user.id}`)
   .listen('MessageSent', (e) => {
-    props.messages.push(e.message);
-    nextTick(() => {
-      scrollToBottom();
-    });
+    updateBox(e.message);
   });
 
 window.Echo.private(`chat.room.${props.room.id}`)
   .listen('MessageSent', (e) => {
-    props.messages.push(e.message);
-    nextTick(() => {
-      scrollToBottom();
-    });
+    updateBox(e.message);
   });
 
 const scrollToBottom = () => {
