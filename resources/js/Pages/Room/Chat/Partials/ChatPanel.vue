@@ -58,7 +58,7 @@ const updateBox = (message) => {
       props.messages.push(message);
     }
   } else {
-    if (props.member.user_id === message.sender_id && !message.receiver_id) {
+    if (props.member.user_id === message.sender_id && message.receiver_id) {
       props.messages.push(message);
     }
   }

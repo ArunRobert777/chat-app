@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateRoomRequest;
 use App\Models\Message;
 use App\Models\Room;
 use App\Models\RoomMember;
 use App\Services\MessageService;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,14 +24,11 @@ class RoomController extends Controller
     ]);
   }
 
-  public function store(Request $request): RedirectResponse
+  public function store(CreateRoomRequest $request): RedirectResponse
   {
+    $validatedData = $request->validated();
 
-    $validatedData = $request->validate([
-      'name' => 'required|string|max:30|unique:rooms,name',
-    ]);
-
-    $validatedData['user_id'] = $request->user()->id;
+    $validatedData['user_id'] = Auth::user()->id;
 
     $room = Room::create($validatedData);
 

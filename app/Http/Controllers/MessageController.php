@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Events\MessageSent;
+use App\Http\Requests\CreateMessageRequest;
+use App\Http\Requests\PrivateMessageRequest;
 use App\Models\Message;
 use App\Models\RoomMember;
 use App\Services\MessageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
 
 class MessageController extends Controller
 {
@@ -17,15 +20,11 @@ class MessageController extends Controller
         $this->messageService = $messageService;
     }
 
-    public function store(Request $request)
+    public function store(CreateMessageRequest $request): JsonResponse
     {
-        $validatedData = $request->validate([
-            'room_id' => 'required|exists:rooms,id',
-            'receiver_id' => 'nullable|exists:users,id',
-            'message' => 'required|string|max:255',
-        ]);
+        $validatedData = $request->validated();
 
-        $validatedData['sender_id'] = $request->user()->id;
+        $validatedData['sender_id'] = Auth::user()->id;
 
         $message = Message::create($validatedData);
 
@@ -37,11 +36,11 @@ class MessageController extends Controller
     }
 
 
-    public function getPrivateRoomMessages(Request $request)
+    public function getPrivateRoomMessages(PrivateMessageRequest $request): JsonResponse
     {
         $userA = Auth::id();
-        $userB = $request->post('receiver_id');
-        $roomId = $request->post('room_id');
+        $userB = $request->input('receiver_id');
+        $roomId = $request->input('room_id');
 
         $messages = $this->messageService->getPrivateRoomMessages($userA, $userB, $roomId);
 

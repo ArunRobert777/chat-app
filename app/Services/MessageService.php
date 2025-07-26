@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Message;
+use Illuminate\Database\Eloquent\Collection;
 
 class MessageService
 {
@@ -14,12 +15,12 @@ class MessageService
         //
     }
 
-    public function getRoomMessages($roomId)
+    public function getRoomMessages($roomId): Collection
     {
         return Message::where('room_id', $roomId)->whereNull('receiver_id')->get();
     }
 
-    public function getPrivateRoomMessages($userA, $userB, $roomId)
+    public function getPrivateRoomMessages($userA, $userB, $roomId): Collection
     {
         return Message::where(function ($query) use ($userA, $userB, $roomId) {
             $query->where('sender_id', $userA)
